@@ -25,7 +25,7 @@ Current contents:
 | Sl No  | Name          | Description     |
 |--------|---------------|-----------------|
 | 1|[Installer Script Example](./scripts/script_orchestrator_install_steps.sh)  | You choose what to do here, but consider this as a script which can carry out an end to end deployment from scratch by calling relevant other scripts.  Some elements, such as making a DNS entry etc. are manual.|
-| 2|[Uninstaller Script Example](./scripts/script_orchestrator_install_steps.sh)  | You choose what to do here.  Use this to script an uninstall / destroy process.  It's recommended to uninstall some components before others - viya, then baseline, then destroy cluster (for obvious reasons).  You may like to uninstall one component, check and then proceed to the other.|
+| 2|[Uninstaller Script Example](./scripts/script_orchestrator_uninstall_steps.sh)  | You choose what to do here.  Use this to script an uninstall / destroy process.  It's recommended to uninstall some components before others - viya, then baseline, then destroy cluster (for obvious reasons).  You may like to uninstall one component, check and then proceed to the other.|
 
 
 
@@ -57,7 +57,7 @@ The [log](/LOG.md) contains a recap of activities carried out throughout this pr
 
 
 ### Subscription Details
-This [file](/subscription/DETAILS.md) and its parent [folder](/subscription/) will host any installation related details about the AWS subscription.
+This [file](/subscription/DETAILS.md) and its parent [folder](/subscription/) will host any installation related details about the Azure subscription.
 
 
 
