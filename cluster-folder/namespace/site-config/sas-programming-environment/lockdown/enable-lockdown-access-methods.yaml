@@ -1,0 +1,11 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: enable-lockdown-access-methods
+patch: |-
+  - op: add
+    path: /data/VIYA_LOCKDOWN_USER_METHODS
+    value: "python python_embed socket"
+target:
+  kind: ConfigMap
+  name: sas-launcher-lockdown-config

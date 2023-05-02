@@ -1,0 +1,49 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-pyconfig-limits
+patch: |-
+  - op: replace
+    path: /spec/jobTemplate/spec/template/spec/containers/0/resources/requests/cpu
+    value:
+      4000m
+  - op: replace
+    path: /spec/jobTemplate/spec/template/spec/containers/0/resources/requests/memory
+    value:
+      3000Mi
+  - op: remove
+    path: /spec/jobTemplate/spec/template/spec/containers/0/resources/limits/cpu
+  - op: remove
+    path: /spec/jobTemplate/spec/template/spec/containers/0/resources/limits/memory
+target:
+  group: batch
+  kind: CronJob
+  name: sas-pyconfig
+  version: v1
+#---
+##apiVersion: builtin
+##kind: PatchTransformer
+##metadata:
+##  name: sas-pyconfig-limits
+##patch: |-
+##  - op: replace
+##    path: /spec/jobTemplate/spec/template/spec/containers/0/resources/requests/cpu
+##    value:
+##      4000m
+##  - op: replace
+##    path: /spec/jobTemplate/spec/template/spec/containers/0/resources/requests/memory
+##    value:
+##      3000Mi
+##  - op: replace
+##    path: /spec/jobTemplate/spec/template/spec/containers/0/resources/limits/cpu
+##    value:
+##      4000m
+##  - op: replace
+##    path: /spec/jobTemplate/spec/template/spec/containers/0/resources/limits/memory
+##    value:
+##      3000Mi
+##target:
+##  group: batch
+##  kind: CronJob
+##  name: sas-pyconfig

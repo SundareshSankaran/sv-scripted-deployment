@@ -1,0 +1,72 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+# THIS IS ONLY AN EXAMPLE TO SHOW A TYPICAL KUSTOMIZATION THAT GETS CREATED.  THIS WILL BE OVERWRITTEN WHEN YOU ACTUALLY RUN REPO
+
+
+
+namespace: viya 
+
+resources:
+## vdm defined resources (pre)
+- sas-bases/base
+- sas-bases/overlays/update-checker
+- sas-bases/overlays/cas-server
+- site-config/vdm/resources/openldap.yaml
+- sas-bases/overlays/crunchydata/postgres-operator
+- sas-bases/overlays/postgres/platform-postgres
+- sas-bases/overlays/network/networking.k8s.io
+- site-config/vdm/resources/openssl-generated-ingress-certificate.yaml
+- sas-bases/overlays/internal-elasticsearch
+- site-config/vdm/resources/sas-deployment-buildinfo.yaml
+- sas-bases/overlays/cas-server/auto-resources
+## user defined resources
+- site-config/sas-microanalytic-score/astores/resources.yaml
+- site-config/sas-open-source-config/python
+
+configurations:
+## vdm defined configurations (post)
+- sas-bases/overlays/required/kustomizeconfig.yaml
+
+transformers:
+## vdm defined transformers (pre)
+- site-config/vdm/transformers/cas-auto-restart.yaml
+- site-config/vdm/transformers/openldap.yaml
+- site-config/vdm/transformers/default-crunchy-storage-transformer.yaml
+- sas-bases/overlays/internal-elasticsearch/internal-elasticsearch-transformer.yaml
+- site-config/vdm/transformers/cas-add-nfs-mount.yaml
+- site-config/vdm/transformers/compute-server-add-nfs-mount.yaml
+- site-config/vdm/transformers/launcher-nfs-mount.yaml
+- site-config/vdm/transformers/sas-storageclass.yaml
+## user defined transformers
+- site-config/cas/cas-enable-external-services.yaml
+- site-config/sas-microanalytic-score/astores/astores-transformer.yaml
+- site-config/sas-open-source-config/python/python-transformer-batch-pod.yaml
+- site-config/sas-open-source-config/python/python-transformer.yaml
+- site-config/sas-programming-environment/lockdown/enable-lockdown-access-methods.yaml
+- site-config/sas-pyconfig/change-configuration.yaml
+- site-config/sas-pyconfig/change-limits.yaml
+## vdm defined transformers (post)
+- sas-bases/overlays/internal-elasticsearch/sysctl-transformer.yaml
+- sas-bases/overlays/required/transformers.yaml
+- site-config/vdm/transformers/mirror.yaml
+- sas-bases/overlays/cas-server/auto-resources/remove-resources.yaml
+
+generators:
+## vdm defined generators (pre)
+- site-config/vdm/generators/sas-license.yaml
+- site-config/vdm/generators/sas-shared-config.yaml
+- site-config/vdm/generators/sas-consul-config-secret.yaml
+- site-config/vdm/generators/ingress-input.yaml
+- site-config/vdm/generators/sas-image-pull-secrets.yaml
+- site-config/vdm/generators/mirror.yaml
+- site-config/vdm/generators/openldap-bootstrap-config.yaml
+- site-config/vdm/generators/customer-provided-merge-sas-certframe-configmap.yaml
+
+components:
+## vdm defined components (pre)
+- sas-bases/components/crunchydata/internal-platform-postgres
+## vdm defined components (post)
+- sas-bases/components/security/core/base/full-stack-tls
+- sas-bases/components/security/network/networking.k8s.io/ingress/nginx.ingress.kubernetes.io/full-stack-tls
+

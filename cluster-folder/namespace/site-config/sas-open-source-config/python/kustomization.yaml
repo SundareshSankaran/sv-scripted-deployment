@@ -1,0 +1,12 @@
+configMapGenerator:
+- name: sas-open-source-config-python
+  literals:
+  - MAS_PYPATH=/opt/sas/viya/home/sas-pyconfig/default_py/bin/python3
+  - MAS_M2PATH=/opt/sas/viya/home/SASFoundation/misc/embscoreeng/mas2py.py
+  - PROC_PYPATH=/opt/sas/viya/home/sas-pyconfig/default_py/bin/python3
+  - PROC_M2PATH=/opt/sas/viya/home/SASFoundation/misc/tk
+  - DM_PYPATH=/opt/sas/viya/home/sas-pyconfig/default_py/bin/python3
+  - SAS_EXT_LLP_PYTHON=/opt/sas/viya/home/sas-pyconfig/default_py/lib/python3.8/lib-dynload
+- name: sas-open-source-config-python-mas
+  literals:
+  - MAS_PYPORT= 31100

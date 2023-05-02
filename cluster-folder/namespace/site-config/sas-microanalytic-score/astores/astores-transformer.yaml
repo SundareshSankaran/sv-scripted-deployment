@@ -1,0 +1,160 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: mas-astores-transformer
+patch: |-
+  # AStore volume
+  - op: add
+    path: /spec/template/spec/volumes/-
+    value:
+      name: astores-volume
+      persistentVolumeClaim:
+        claimName: sas-microanalytic-score-astores
+  #Add mount path for AStore ( /models/astores/viya ) 
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: astores-volume
+      mountPath: /models/astores/viya
+      subPath: models
+      
+  #Add mount path for resources ( /models/resources/viya ) 
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: astores-volume
+      mountPath: /models/resources/viya
+      subPath: resources
+      
+target:
+  group: apps
+  kind: Deployment
+  name: sas-microanalytic-score
+  version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: launcher-job--astores-transformer
+patch: |-
+  # AStore volume
+  - op: add
+    path: /template/spec/volumes/-
+    value:
+      name: astores-volume
+      persistentVolumeClaim:
+        claimName: sas-microanalytic-score-astores
+  #Add mount path for AStore dir
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      name: astores-volume
+      mountPath: /opt/sas/viya/config/data/modelsvr/astore
+      subPath: models
+      
+  #Add mount path for resources dir
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      name: astores-volume
+      mountPath: /opt/sas/viya/config/data/modelsvr/resources
+      subPath: resources
+      
+target:
+  kind: PodTemplate
+  name: sas-launcher-job-config
+  version: v1
+  
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: compute-job--astores-transformer
+patch: |-
+  # AStore volume
+  - op: add
+    path: /template/spec/volumes/-
+    value:
+      name: astores-volume
+      persistentVolumeClaim:
+        claimName: sas-microanalytic-score-astores
+  #Add mount path for AStore 
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      name: astores-volume
+      mountPath: /opt/sas/viya/config/data/modelsvr/astore
+      subPath: models
+      
+  #Add mount path for resources 
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      name: astores-volume
+      mountPath: /opt/sas/viya/config/data/modelsvr/resources
+      subPath: resources
+      
+target:
+  kind: PodTemplate
+  name: sas-compute-job-config
+  version: v1            
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: cas-astores-transformer
+patch: |-
+  # AStore volume
+  - op: add
+    path: /spec/controllerTemplate/spec/volumes/-
+    value:
+      name: astores-volume
+      persistentVolumeClaim:
+        claimName: sas-microanalytic-score-astores                           
+  #Add mount path for resources ( /models/resources/viya ) 
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
+    value:
+      name: astores-volume
+      mountPath: /models/resources/viya
+      subPath: resources
+      
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  name: .*
+  version: v1alpha1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: model-respository-astores-transformer
+patch: |-
+  # AStore volume
+  - op: add
+    path: /spec/template/spec/volumes/-
+    value:
+      name: astores-volume
+      persistentVolumeClaim:
+        claimName: sas-microanalytic-score-astores
+  #Add mount path for AStore ( /models/astores/viya ) 
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: astores-volume
+      mountPath: /models/astores/viya
+      subPath: models
+      
+  #Add mount path for resources ( /models/resources/viya ) 
+  - op: add
+    path: /spec/template/spec/containers/0/volumeMounts/-
+    value:
+      name: astores-volume
+      mountPath: /models/resources/viya
+      subPath: resources
+      
+target:
+  group: apps
+  kind: Deployment
+  name: sas-model-repository
+  version: v1

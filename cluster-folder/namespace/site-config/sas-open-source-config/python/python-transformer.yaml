@@ -1,0 +1,183 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: mas-python-transformer
+patch: |-  
+  # Add side car Container 
+  - op: add
+    path: /spec/template/spec/containers/-
+    value: 
+      name: viya4-mas-python-runner
+      image: sas-microanalytic-score
+      imagePullPolicy: IfNotPresent 
+      securityContext: 
+        runAsUser: 1001
+        allowPrivilegeEscalation: false
+        capabilities:
+          add: []
+          drop:
+          - ALL
+        privileged: false
+        readOnlyRootFilesystem: true
+          
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+      - name: pytmp
+        mountPath: /tmp      
+      - name: python-volume
+        mountPath: /opt/sas/viya/home/sas-pyconfig
+        readOnly: true 
+      - name: astores-volume
+        mountPath: /models/resources/viya 
+        subPath: resources 
+      command: ["$(MAS_PYPATH)", "$(MAS_M2PATH)"]
+      envFrom:
+      - configMapRef:
+          name: sas-open-source-config-python
+      - configMapRef:
+          name: sas-open-source-config-python-mas
+      resources:
+        requests:
+          memory: 50Mi
+          cpu: 50m
+        limits:
+          memory: 500Mi
+          cpu: 500m    
+
+  # Add tmp volume
+  - op: add
+    path: /spec/template/spec/volumes/-
+    value: 
+      emptyDir: {}
+      name: pytmp
+   
+                           
+  # Add python volume
+  - op: add
+    path: /spec/template/spec/volumes/-
+    value: { name: python-volume, persistentVolumeClaim: {claimName: sas-pyconfig} }
+
+  
+  # Add python-config configMap
+  - op: add
+    path: /spec/template/spec/containers/0/envFrom/-
+    value:
+      configMapRef:
+        name: sas-open-source-config-python
+  # Add python-mas-config configMap
+  - op: add
+    path: /spec/template/spec/containers/0/envFrom/-
+    value:
+      configMapRef:
+        name: sas-open-source-config-python-mas
+
+
+target:
+  group: apps
+  kind: Deployment
+  name: sas-microanalytic-score
+  version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: cas-python-transformer
+patch: |-
+  # Add python volume
+  - op: add
+    path: /spec/controllerTemplate/spec/volumes/-
+    value: { name: python-volume, persistentVolumeClaim: {claimName: sas-pyconfig} }
+
+  # Add mount path for python
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/volumeMounts/-
+    value:
+      name: python-volume
+      mountPath: /opt/sas/viya/home/sas-pyconfig
+      readOnly: true
+
+  # Add python-config configMap
+  - op: add
+    path: /spec/controllerTemplate/spec/containers/0/envFrom/-
+    value:
+      configMapRef:
+        name: sas-open-source-config-python
+
+target:
+  group: viya.sas.com
+  kind: CASDeployment
+  name: .*
+  version: v1alpha1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: launcher-job-python-transformer
+patch: |-
+  # Add python volume
+  - op: add
+    path: /template/spec/volumes/-
+    value: { name: python-volume, persistentVolumeClaim: {claimName: sas-pyconfig} }
+
+  # Add mount path for python
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      name: python-volume
+      mountPath: /opt/sas/viya/home/sas-pyconfig
+      readOnly: true
+
+  # Add python-config configMap
+  - op: add
+    path: /template/spec/containers/0/envFrom/-
+    value:
+      configMapRef:
+        name: sas-open-source-config-python
+
+target:
+  kind: PodTemplate
+  name: sas-launcher-job-config
+  version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: compute-job-python-transformer
+patch: |-
+  # Add python volume
+  - op: add
+    path: /template/spec/volumes/-
+    value: { name: python-volume, persistentVolumeClaim: {claimName: sas-pyconfig} }
+
+  # Add mount path for python
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      name: python-volume
+      mountPath: /opt/sas/viya/home/sas-pyconfig
+      readOnly: true
+
+  # Add python-config configMap
+  - op: add
+    path: /template/spec/containers/0/envFrom/-
+    value:
+      configMapRef:
+        name: sas-open-source-config-python
+
+target:
+  kind: PodTemplate
+  name: sas-compute-job-config
+  version: v1
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: add-python-sas-java-policy-allow-list
+patch: |-
+  - op: add
+    path: /data/SAS_JAVA_POLICY_ALLOW_DM_PYPATH
+    value: /opt/sas/viya/home/sas-pyconfig/default_py/bin/python3
+target:
+  kind: ConfigMap
+  name: sas-programming-environment-java-policy-config

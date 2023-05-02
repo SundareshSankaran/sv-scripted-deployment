@@ -1,0 +1,57 @@
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: sas-pyconfig-custom-parameters
+patch: |-
+  - op: replace 
+    path: /data/global.enabled
+    value: "true"
+  - op: replace 
+    path: /data/global.python_enabled
+    value: "true"
+  - op: replace 
+    path: /data/global.r_enabled
+    value: "false"
+  - op: replace
+    path: /data/global.pvc
+    value: "/opt/sas/viya/home/sas-pyconfig"
+  - op: replace
+    path: /data/global.python_profiles
+    value: "default_py"
+  - op: replace
+    path: /data/global.r_profiles
+    value: "default_r"
+  - op: replace
+    path: /data/default_py.configure_opts
+    value: "--enable-optimizations"
+  - op: replace
+    path: /data/default_r.configure_opts
+    value: "--enable-memory-profiling --enable-R-shlib --with-blas --with-lapack --with-readline=no --with-x=no --enable-BLAS-shlib"
+  - op: replace
+    path: /data/default_py.cflags
+    value: "-fPIC"
+  - op: replace
+    path: /data/default_r.cflags
+    value: "-fPIC"
+  - op: replace
+    path: /data/default_py.pip_install_packages
+    value: "virtualenv pandas swat sas_kernel matplotlib scikit-learn json2 gensim pyarrow hnswlib sas-ipc-queue great-expectations==0.15.49"
+  - op: replace
+    path: /data/default_py.python_signer
+    value: https://keybase.io/ambv/pgp_keys.asc
+  - op: replace
+    path: /data/default_py.python_signature
+    value: https://www.python.org/ftp/python/3.8.15/Python-3.8.15.tgz.asc
+  - op: replace
+    path: /data/default_py.python_tarball
+    value: https://www.python.org/ftp/python/3.8.15/Python-3.8.15.tgz
+  - op: replace
+    path: /data/default_r.r_tarball
+    value: https://cloud.r-project.org/src/base/R-4/R-4.2.2.tar.gz
+  - op: replace
+    path: /data/default_r.packages
+    value: "dplyr jsonlite httr tidyverse randomForest xgboost forecast"
+target:
+  version: v1
+  kind: ConfigMap
+  name: sas-pyconfig-parameters

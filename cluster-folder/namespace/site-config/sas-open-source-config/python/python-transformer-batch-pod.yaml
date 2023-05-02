@@ -1,0 +1,30 @@
+---
+apiVersion: builtin
+kind: PatchTransformer
+metadata:
+  name: batch-job-python-transformer
+patch: |-
+  # Add python volume
+  - op: add
+    path: /template/spec/volumes/-
+    value: { name: python-volume, persistentVolumeClaim: {claimName: sas-pyconfig} }
+
+  # Add mount path for python
+  - op: add
+    path: /template/spec/containers/0/volumeMounts/-
+    value:
+      name: python-volume
+      mountPath: /opt/sas/viya/home/sas-pyconfig
+      readOnly: true
+
+  # Add python-config configMap
+  - op: add
+    path: /template/spec/containers/0/envFrom/-
+    value:
+      configMapRef:
+        name: sas-open-source-config-python
+
+target:
+  kind: PodTemplate
+  name: sas-batch-pod-template
+  version: v1
